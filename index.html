@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KatrinaSec</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: "JetBrains Mono", monospace;
+      background-color: #000;
+      color: #fff;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .container {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .brand-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brand-icon {
+      width: 300px; /* ajusta tamanho */
+      height: auto;
+      filter: drop-shadow(0 0 12px rgba(0, 157, 255, 0.5));
+    }
+
+    .brand-text {
+      font-size: 64px;
+      font-weight: 700;
+      font-family: "JetBrains Mono", monospace;
+      background: linear-gradient(90deg, #007BFF 0%, #00E3C2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 1px;
+      filter: drop-shadow(0 0 12px rgba(0, 157, 255, 0.4));
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    .subtagline {
+      margin-top: -80px;
+    }
+
+    .subtagline h1 {
+      font-size: 22px;
+      color: rgba(230, 235, 238, 0.8);
+      letter-spacing: 1px;
+      transform: translateX(80px);
+    }
+
+    @media (max-width: 1024px) {
+      .brand-icon { width: 220px; }
+      .brand-text { font-size: 48px; }
+      .subtagline { margin-top: -60px; }
+      .subtagline h1 { font-size: 20px; transform: translateX(50px); }
+    }
+
+    @media (max-width: 768px) and (orientation: portrait) {
+      .brand-wrapper {flex-direction: column; gap: 20px;}
+      .subtagline {margin-top: 20px !important;}
+      .subtagline h1 {transform: none !important; font-size: 18px;}
+    }
+
+    @media (max-width: 480px) {
+      .brand-icon { width: 140px; }
+      .brand-text { font-size: 28px; }
+      .subtagline { margin-top: -20px; }
+      .subtagline h1 { font-size: 16px; letter-spacing: 0; }
+    }
+
+  </style>
+</head>
+<body>
+  <canvas id="wave"></canvas>
+
+  <div class="container">
+    <div class="brand-wrapper">
+      <img src="logo.png" alt="Logo KatrinaSec" class="brand-icon">
+      <div class="brand-text">KATRINASEC</div>
+    </div>
+    <div class="subtagline">
+    <h1>Coming Soon...</h1>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById("wave");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let w = canvas.width;
+    let h = canvas.height;
+
+    const xGap = 25;
+    const yGap = 40;
+    let points = [];
+
+    let mouse = {x: -1000, y: -1000}; // Inicializa fora da tela
+
+    window.addEventListener("mousemove", (e) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    });
+
+    // gerar grid
+    function initGrid() {
+      points = [];
+      for (let x = 0; x < w + xGap; x += xGap) {
+        let row = [];
+        for (let y = 0; y < h + yGap; y += yGap) {
+          row.push({x, y, offsetX: 0, offsetY: 0});
+        }
+        points.push(row);
+      }
+    }
+
+    function animate(t) {
+      ctx.clearRect(0, 0, w, h);
+      ctx.lineWidth = 1;
+      ctx.shadowBlur = 0;
+
+      // Atualizar offsets de cada ponto (onda base + deformação pelo mouse)
+      points.forEach((col, ci) => {
+        col.forEach((p, ri) => {
+          let angle = (t*0.001 + ci*0.3) * 0.8;
+          p.offsetX = Math.sin(angle + ri*0.3) * 20;
+          p.offsetY = Math.cos(angle + ci*0.3) * 10;
+
+          // interação com o mouse
+          let dx = mouse.x - p.x;
+          let dy = mouse.y - p.y;
+          let dist = Math.sqrt(dx*dx + dy*dy);
+
+          if (dist < 200) {
+            let force = (1 - dist/200);
+            p.offsetX += dx/dist * 80 * force;
+            p.offsetY += dy/dist * 40 * force;
+            p.force = force; // guardar força local
+          } else {
+            p.force = 0;
+          }
+        });
+      });
+
+      // Desenhar colunas como segmentos individuais
+      points.forEach((col) => {
+        for (let ri = 0; ri < col.length - 1; ri++) {
+          let p1 = col[ri];
+          let p2 = col[ri + 1];
+
+          // Calcular opacidade do segmento (média dos dois pontos)
+          let baseOpacity = 0.15;
+          let maxOpacity  = 0.9;
+          let localOpacity = baseOpacity + Math.max(p1.force, p2.force) * (maxOpacity - baseOpacity);
+
+          ctx.strokeStyle = `rgba(0, 157, 255, ${localOpacity})`;
+
+          // Glow proporcional se perto do mouse
+          ctx.shadowBlur = 15 * Math.max(p1.force, p2.force);
+
+          ctx.beginPath();
+          ctx.moveTo(p1.x + p1.offsetX, p1.y + p1.offsetY);
+          ctx.lineTo(p2.x + p2.offsetX, p2.y + p2.offsetY);
+          ctx.stroke();
+        }
+      });
+
+      requestAnimationFrame(animate);
+    }
+
+    initGrid();
+    animate(0);
+
+    window.addEventListener("resize", () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      w = canvas.width;
+      h = canvas.height;
+      initGrid();
+    });
+  </script>
+</body>
+</html>
