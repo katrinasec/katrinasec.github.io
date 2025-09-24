@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KatrinaSec</title>
+  <link rel="icon" type="image/png" href="logo.png">
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
   <style>
     body {
@@ -32,7 +33,7 @@
     }
 
     .brand-icon {
-      width: 300px; /* ajusta tamanho */
+      width: 300px;
       height: auto;
       filter: drop-shadow(0 0 12px rgba(0, 157, 255, 0.5));
     }
@@ -117,7 +118,7 @@
     const yGap = 40;
     let points = [];
 
-    let mouse = {x: -1000, y: -1000}; // Inicializa fora da tela
+    let mouse = {x: -1000, y: -1000};
 
     window.addEventListener("mousemove", (e) => {
       mouse.x = e.clientX;
@@ -141,14 +142,12 @@
       ctx.lineWidth = 1;
       ctx.shadowBlur = 0;
 
-      // Atualizar offsets de cada ponto (onda base + deformação pelo mouse)
       points.forEach((col, ci) => {
         col.forEach((p, ri) => {
           let angle = (t*0.001 + ci*0.3) * 0.8;
           p.offsetX = Math.sin(angle + ri*0.3) * 20;
           p.offsetY = Math.cos(angle + ci*0.3) * 10;
 
-          // interação com o mouse
           let dx = mouse.x - p.x;
           let dy = mouse.y - p.y;
           let dist = Math.sqrt(dx*dx + dy*dy);
@@ -157,27 +156,25 @@
             let force = (1 - dist/200);
             p.offsetX += dx/dist * 80 * force;
             p.offsetY += dy/dist * 40 * force;
-            p.force = force; // guardar força local
+            p.force = force;
           } else {
             p.force = 0;
           }
         });
       });
 
-      // Desenhar colunas como segmentos individuais
       points.forEach((col) => {
         for (let ri = 0; ri < col.length - 1; ri++) {
           let p1 = col[ri];
           let p2 = col[ri + 1];
 
-          // Calcular opacidade do segmento (média dos dois pontos)
           let baseOpacity = 0.15;
           let maxOpacity  = 0.9;
           let localOpacity = baseOpacity + Math.max(p1.force, p2.force) * (maxOpacity - baseOpacity);
 
           ctx.strokeStyle = `rgba(0, 157, 255, ${localOpacity})`;
 
-          // Glow proporcional se perto do mouse
+
           ctx.shadowBlur = 15 * Math.max(p1.force, p2.force);
 
           ctx.beginPath();
