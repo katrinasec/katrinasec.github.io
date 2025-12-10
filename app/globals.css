@@ -1,0 +1,386 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+ 
+@layer base {
+  :root {
+    --background: 0 0% 4%;           /* #0A0A0A - Fundo principal (preto suave) */
+    --foreground: 210 40% 98%;       /* #F7FAFC - Texto principal (branco azulado claro) */
+    
+    --card: 222.2 84% 4.9%;          /* #020817 - Fundo dos cards (azul escuro profundo) */
+    --card-foreground: 210 40% 98%;  /* #F7FAFC - Texto dos cards (branco azulado claro) */
+    
+    --popover: 222.2 84% 4.9%;       /* #020817 - Fundo de popovers/tooltips (azul escuro profundo) */
+    --popover-foreground: 210 40% 98%; /* #F7FAFC - Texto de popovers (branco azulado claro) */
+    
+    --primary: 199 89% 48%;          /* #007BFF - Cor primária/destaque (azul ciano vibrante) */
+    --primary-foreground: 210 40% 98%; /* #F7FAFC - Texto sobre primary (branco azulado claro) */
+    
+    --secondary: 217.2 32.6% 17.5%;  /* #1E293B - Cor secundária (azul acinzentado escuro) */
+    --secondary-foreground: 210 40% 98%; /* #F7FAFC - Texto sobre secondary (branco azulado claro) */
+    
+    --muted: 217.2 32.6% 17.5%;      /* #1E293B - Elementos desativados/muted (azul acinzentado escuro) */
+    --muted-foreground: 215 20.2% 65.1%; /* #94A3B8 - Texto desativado (cinza azulado médio) */
+    
+    --accent: 208 100% 50%;          /* #007BFF - Cor do katrina
+    --accent-foreground: 210 40% 98%; /* #F7FAFC - Texto sobre accent (branco azulado claro) */
+    
+    --destructive: 0 62.8% 30.6%;    /* #991B1B - Cor destrutiva/erro (vermelho escuro) */
+    --destructive-foreground: 210 40% 98%; /* #F7FAFC - Texto sobre destructive (branco azulado claro) */
+    
+    --border: 217.2 32.6% 17.5%;     /* #1E293B - Cor das bordas (azul acinzentado escuro) */
+    --input: 217.2 32.6% 17.5%;      /* #1E293B - Fundo dos inputs (azul acinzentado escuro) */
+    --ring: 199 89% 48%;             /* #007BFF - Cor do outline/focus ring (azul ciano vibrante) */
+    
+    --radius: 0.5rem;                /* 8px - Raio de borda padrão para arredondamento */
+  }
+}
+ 
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-background;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-primary/30 rounded-full;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary/50;
+  }
+}
+.fix-letter-g {
+  line-height: 1.3 !important;
+  overflow: visible !important;
+  padding-bottom: 0.2em;
+}
+
+/* glitch botao contato */
+.glitch-button {
+  position: relative;
+  isolation: isolate;
+  transition: all 0.2s ease;
+}
+
+/* efeito principal */
+.glitch-button:hover {
+  animation: glitch 0.55s infinite;
+  filter: invert(1);
+}
+
+/* camadas simulando duplicação de imagem tipo glitch */
+.glitch-button::before,
+.glitch-button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg,rgba(255, 0, 34, 1),rgba(41, 172, 47, 1));
+  mix-blend-mode: screen;
+  opacity: 0.6;
+  z-index: -1;
+}
+
+/* Glitch em duas camadas coloridas */
+.glitch-button::before {
+  animation: glitch-1 0.45s infinite;
+  transform: translate(-2px, -1px);
+  filter: hue-rotate(60deg);
+}
+
+.glitch-button::after {
+  animation: glitch-2 0.25s infinite;
+  transform: translate(2px, 1px);
+  filter: hue-rotate(-60deg);
+}
+
+/* Reutiliza as keyframes padrão */
+@keyframes glitch {
+  0%, 100% { transform: translate(0); }
+  25% { transform: translate(-2px, 1px); }
+  50% { transform: translate(2px, -1px); }
+  75% { transform: translate(-1px, -2px); }
+}
+
+@keyframes glitch-1 {
+  0%, 100% { transform: translate(0); opacity: 0.3; }
+  33% { transform: translate(-3px, 1px); opacity: 0.6; }
+  66% { transform: translate(2px, -1px); opacity: 0.4; }
+}
+
+@keyframes glitch-2 {
+  0%, 100% { transform: translate(0); opacity: 0.3; }
+  33% { transform: translate(3px, -1px); opacity: 0.6; }
+  66% { transform: translate(-2px, 1px); opacity: 0.4; }
+}
+
+
+.digital-glitch {
+  position: relative;
+  display: inline-block;
+  /* tira o cursor de "link" se não for clicável */
+  cursor: default;
+  transition: all 0.7s ease;
+  font-size: inherit;
+  font-family: inherit;
+  line-height: 1.2;
+  color: transparent;
+  background: linear-gradient(90deg, #007BFF, #00E3C2);
+  -webkit-background-clip: text;
+  background-clip: text;
+  /* opcional: se quiser SEM inverter as cores */
+  /* filter: invert(1); */
+  animation: glitch 0.7s infinite; /* antes era só no :hover */
+}
+
+/* Clones do texto */
+.digital-glitch::before,
+.digital-glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  font-size: inherit;
+  font-family: inherit;
+  line-height: inherit;
+  color: transparent;
+  background: linear-gradient(90deg, #007BFF, #00E3C2);
+  -webkit-background-clip: text;
+  background-clip: text;
+  pointer-events: none;
+}
+
+/* ANTES: .digital-glitch:hover::before */
+.digital-glitch::before {
+  animation: glitch-1 0.7s infinite;
+  clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+  transform: translate(-2px, -2px);
+  filter: invert(1);
+}
+
+/* ANTES: .digital-glitch:hover::after */
+.digital-glitch::after {
+  animation: glitch-2 0.7s infinite;
+  clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
+  transform: translate(2px, 2px);
+  filter: invert(1);
+}
+
+.digital-glitch:hover {
+  filter: invert(1);
+  animation: glitch 0.6s infinite;
+}
+
+@keyframes glitch {
+  0%, 100% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+}
+
+@keyframes glitch-1 {
+  0%, 100% { transform: translate(0); }
+  33% { transform: translate(-3px, 0); }
+  66% { transform: translate(3px, 0); }
+}
+
+@keyframes glitch-2 {
+  0%, 100% { transform: translate(0); }
+  33% { transform: translate(3px, 0); }
+  66% { transform: translate(-3px, 0); }
+}
+
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .animate-count-up {
+    counter-reset: num var(--num-from);
+    animation: count-up 2s ease-out forwards;
+  }
+  
+  @keyframes count-up {
+    to {
+      counter-reset: num var(--num-to);
+    }
+  }
+  
+  
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent;
+  }
+  
+  .hero-gradient {
+    background: radial-gradient(ellipse at center, rgba(0, 119, 179, 0.15) 0%, rgba(0, 217, 225, 0.05) 50%, transparent 100%);
+  }
+  
+  .card-glow {
+    box-shadow: 0 0 20px rgba(0, 119, 179, 0.1);
+  }
+  
+  .card-glow:hover {
+    box-shadow: 0 0 40px rgba(0, 119, 179, 0.2);
+  }
+  
+  .tech-grid {
+    background-image: 
+      linear-gradient(rgba(0, 119, 179, 0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 119, 179, 0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+}
+
+/* Framer Motion layout shift fix */
+.framer-motion-div {
+  transform-style: preserve-3d;
+}
+
+
+/* Glitch sutil */
+@keyframes glitch-1 {
+  0%, 100% {
+    transform: translate(0);
+    opacity: 0;
+  }
+  33% {
+    transform: translate(-2px, 2px);
+    opacity: 0.7;
+  }
+  66% {
+    transform: translate(2px, -2px);
+    opacity: 0.7;
+  }
+}
+
+@keyframes glitch-2 {
+  0%, 100% {
+    transform: translate(0);
+    opacity: 0;
+  }
+  33% {
+    transform: translate(2px, -2px);
+    opacity: 0.5;
+  }
+  66% {
+    transform: translate(-2px, 2px);
+    opacity: 0.5;
+  }
+}
+
+.animate-glitch-1 {
+  animation: glitch-1 0.3s infinite;
+}
+
+.animate-glitch-2 {
+  animation: glitch-2 0.3s infinite 0.1s;
+}
+
+
+
+/* Glitch sutil */
+@keyframes glitch-1 {
+  0%, 100% {
+    transform: translate(0);
+    opacity: 0;
+  }
+  33% {
+    transform: translate(-2px, 2px);
+    opacity: 0.7;
+  }
+  66% {
+    transform: translate(2px, -2px);
+    opacity: 0.7;
+  }
+}
+
+@keyframes glitch-2 {
+  0%, 100% {
+    transform: translate(0);
+    opacity: 0;
+  }
+  33% {
+    transform: translate(2px, -2px);
+    opacity: 0.5;
+  }
+  66% {
+    transform: translate(-2px, 2px);
+    opacity: 0.5;
+  }
+}
+
+.animate-glitch-1 {
+  animation: glitch-1 0.3s infinite;
+}
+
+.animate-glitch-2 {
+  animation: glitch-2 0.3s infinite 0.1s;
+}
+
+/* Glitch intenso */
+/* ===== Base Glitch ===== */
+@keyframes glitch-base {
+  0%, 100% {
+    transform: translate(0);
+  }
+  25% {
+    transform: translate(-1px, 1px);
+  }
+  50% {
+    transform: translate(1px, -1px);
+  }
+  75% {
+    transform: translate(-1px, -1px);
+  }
+}
+
+.animate-glitch-base {
+  animation: glitch-base 0.25s infinite alternate;
+}
+
+/* ===== Hover Glitch ===== */
+@keyframes glitch-hover {
+  0%, 100% {
+    transform: translate(0);
+    filter: hue-rotate(0deg);
+  }
+  20% {
+    transform: skewX(5deg) translate(2px, -1px);
+  }
+  40% {
+    transform: skewX(-5deg) translate(-2px, 1px);
+  }
+  60% {
+    transform: translate(1px, 2px);
+    filter: hue-rotate(15deg);
+  }
+  80% {
+    transform: translate(-1px, -2px);
+    filter: hue-rotate(-15deg);
+  }
+}
+
+.animate-glitch-hover {
+  animation: glitch-hover 0.3s infinite;
+}
