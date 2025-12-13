@@ -1,15 +1,43 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 export default function WaveBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const [isVisible, setIsVisible] = useState(false)
+  const animationFrameRef = useRef<number>()
+  const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting)
+      },
+      { threshold: 0 }
+    )
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current)
+    }
+
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    if (!isVisible) {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current)
+      }
+      return
+    }
+
     const canvas = canvasRef.current
     if (!canvas) return
 
-    const ctx = canvas.getContext('2d')
+    const ctx = canvas.getContext('2d', {
+      alpha: true,
+      desynchronized: true,
+    })
     if (!ctx) return
 
     canvas.width = window.innerWidth
@@ -24,12 +52,19 @@ export default function WaveBackground() {
 
     let mouse = { x: -1000, y: -1000 }
 
+    let mouseUpdateScheduled = false
     const handleMouseMove = (e: MouseEvent) => {
-      mouse.x = e.clientX
-      mouse.y = e.clientY
+      if (!mouseUpdateScheduled) {
+        mouseUpdateScheduled = true
+        requestAnimationFrame(() => {
+          mouse.x = e.clientX
+          mouse.y = e.clientY
+          mouseUpdateScheduled = false
+        })
+      }
     }
 
-    window.addEventListener('mousemove', handleMouseMove)
+    window.addEventListener('mousemove', handleMouseMove, { passive: true })
 
     // gerar grid
     function initGrid() {
@@ -45,6 +80,7 @@ export default function WaveBackground() {
 
     function animate(t: number) {
       if (!canvas || !ctx) return
+      
       ctx.clearRect(0, 0, w, h)
       ctx.lineWidth = 1
       ctx.shadowBlur = 0
@@ -90,33 +126,42 @@ export default function WaveBackground() {
         }
       })
 
-      requestAnimationFrame(animate)
+      animationFrameRef.current = requestAnimationFrame(animate)
     }
 
     initGrid()
-    animate(0)
+    animationFrameRef.current = requestAnimationFrame(animate)
 
+    let resizeTimeout: NodeJS.Timeout
     const handleResize = () => {
-      canvas.width = window.innerWidth
-      canvas.height = window.innerHeight
-      w = canvas.width
-      h = canvas.height
-      initGrid()
+      clearTimeout(resizeTimeout)
+      resizeTimeout = setTimeout(() => {
+        canvas.width = window.innerWidth
+        canvas.height = window.innerHeight
+        w = canvas.width
+        h = canvas.height
+        initGrid()
+      }, 150)
     }
 
-    window.addEventListener('resize', handleResize)
+    window.addEventListener('resize', handleResize, { passive: true })
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove)
       window.removeEventListener('resize', handleResize)
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current)
+      }
+      clearTimeout(resizeTimeout)
     }
-  }, [])
+  }, [isVisible]) 
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="absolute inset-0 w-full h-full pointer-events-none"
-      style={{ zIndex: 1 }}
-    />
+    <div ref={containerRef} className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 1 }}>
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 w-full h-full pointer-events-none"
+      />
+    </div>
   )
 }
