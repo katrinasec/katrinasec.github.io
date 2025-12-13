@@ -224,7 +224,7 @@ export default function AboutSection() {
           }}
       />
       
-      <div ref={ref} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">}
+      <div ref={ref} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <Suspense fallback={<div className="text-center mb-16">Carregando...</div>}>
           {inView && (
             <>
