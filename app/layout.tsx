@@ -15,31 +15,31 @@ export const metadata: Metadata = {
     default: 'KATRINASEC | Offensive Security',
     template: '%s | KATRINASEC'
   },
-  description: 'Leading cybersecurity company providing comprehensive security solutions, penetration testing, threat assessment, and digital protection services for businesses worldwide.',
-  keywords: ['cybersecurity', 'security solutions', 'penetration testing', 'threat assessment', 'digital security', 'KatrinaSec'],
-  authors: [{ name: 'KatrinaSec Team' }],
-  creator: 'KatrinaSec',
+  description: 'Empresa focada em Offensive Security, que oferece serviços de Pentest, Engenharia Social e Code Review.',
+  keywords: ['cybersecurity', 'security solutions', 'penetration testing', 'threat assessment', 'phishing', 'KatrinaSec'],
+  authors: [{ name: 'KATRINASEC' }],
+  creator: 'KATRINASEC',
   openGraph: {
     type: 'website',
     locale: 'pt_BR',
     url: '/',
     title: 'KATRINASEC | Offensive Security',
-    description: 'Leading cybersecurity company providing comprehensive security solutions and digital protection services.',
-    siteName: 'KatrinaSec',
+    description: 'Empresa focada em Offensive Security, que oferece serviços de Pentest, Engenharia Social e Code Review.',
+    siteName: 'KATRINASEC',
     images: [
       {
-        url: '/og-image.png',
+        url: '/favicon.png',
         width: 1200,
         height: 630,
-        alt: 'KatrinaSec Offensive Security',
+        alt: 'KATRINASEC | Offensive Security',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'KatrinaSec - Advanced Cybersecurity Solutions',
-    description: 'Leading cybersecurity company providing comprehensive security solutions.',
-    images: ['/og-image.png'],
+    title: 'KATRINASEC | Offensive Security',
+    description: 'Empresa focada em Offensive Security',
+    images: ['/favicon.png'],
   },
   icons: {
     icon: '/favicon.png',
@@ -80,3 +80,4 @@ export default function RootLayout({
     </html>
   )
 }
+
