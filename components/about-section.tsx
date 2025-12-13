@@ -33,6 +33,8 @@ const companies = [
   { name: 'Dyson', logo: '/companies/dyson-logo.png' },
 ]
 
+type Company = typeof companies[number]
+
 const values = [
   {
     icon: Shield,
@@ -65,6 +67,7 @@ function CompaniesMarquee() {
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsVisible(true)
+          observer.disconnect()
         }
       },
       { threshold: 0.1 }
@@ -100,7 +103,7 @@ function CompaniesMarquee() {
   )
 }
 
-function MarqueeStatic({ companies }: { companies: typeof companies }) {
+function MarqueeStatic({ companies }: { companies: Company[] }) {
   return (
     <div className="flex gap-12 animate-marquee">
       {companies.map((company, index) => (
@@ -131,9 +134,10 @@ export default function AboutSection() {
       ([entry]) => {
         if (entry.isIntersecting) {
           setInView(true)
+          observer.disconnect()
         }
       },
-      { threshold: 0.1, triggerOnce: true }
+      { threshold: 0.1 }
     )
 
     if (ref.current) {
